@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
+import os
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 
 app = Flask(__name__)
+
 '''
 OUR MOCK ARRAY OF PROJECTS
 playlists = [
@@ -11,8 +13,9 @@ playlists = [
    { 'title': '80\'s Music', 'description': 'Don\'t stop believing!'}
 ]
 '''
-client = MongoClient()
-db = client.Playlister
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Playlister')
+client = MongoClient(host=f'{host}?retryWrites=false')
+db = client.get_default_database()
 playlists = db.playlists
 
 @app.route('/')
@@ -66,6 +69,7 @@ def playlists_delete(playlist_id):
     """Delete one playlist."""
     playlists.delete_one({'_id': ObjectId(playlist_id)})
     return redirect(url_for('playlists_index'))
-    
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 5000))
