@@ -4,16 +4,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from datetime import datetime
 
-
 app = Flask(__name__)
 
-'''
-OUR MOCK ARRAY OF PROJECTS
-playlists = [
-    { 'title': 'Cat Videos', 'description': 'Cats acting weird' },
-   { 'title': '80\'s Music', 'description': 'Don\'t stop believing!'}
-]
-'''
 host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Playlister')
 client = MongoClient(host=f'{host}?retryWrites=false')
 db = client.get_default_database()
@@ -34,7 +26,6 @@ def playlists_submit():
         'videos': request.form.get('videos').split(),
         'created_at': datetime.now()
     }
-    print(playlist)
     playlist_id = playlists.insert_one(playlist).inserted_id
     return redirect(url_for('playlists_show', playlist_id=playlist_id))
 
